@@ -1,48 +1,63 @@
-import './App.css';
-import React, {useState} from 'react';
-import {marked} from 'marked'
+import { useState } from "react";
+import "./App.css";
+import useLocalStorage from "./hooks/useLocalStorage";
+import Document from "./components/Document";
 
 const App = () => {
-  const [code, setCode] = useState('## Hello')
-  const [compiled, setCompiled] = useState('<h2 id="hello">Hello</h2>')
-  const [hide, hidePreview] = useState(true)
+  const { handleChange, code, compiled } = useLocalStorage();
+  const [activeTab, setActiveTab] = useState(0);
 
-  const openMD = () => {
-    console.log(0)
-    hidePreview(true)
-  }
-
-  const openPreview = () => {
-    console.log(0)
-    hidePreview(false)
-  }
-
-  const handleChange = (e) => {
-    setCode(e.target.value)
-    setCompiled(marked.parse(e.target.value))
-  }
+  const textAreaActive = () => {
+    if (activeTab === 0) {
+      return (
+        <div>
+          <textarea onChange={handleChange} value={code} />
+        </div>
+      );
+    } else if (activeTab === 1) {
+      return (
+        <div>
+          <textarea value={compiled} readOnly />
+        </div>
+      );
+    } else if (activeTab === 2) {
+      return (
+        <div>
+          <Document />
+        </div>
+      );
+    }
+  };
 
   return (
     <>
+      {/* <Document /> */}
       <h1>MarkDown Previewer React App</h1>
       <div className="container">
         <div className="btns">
-          <button onClick={openMD} className="btn">MarkDown</button>
-          <button onClick={openPreview}>Preview</button>
+          <button
+            className={activeTab === 0 ? "btn" : null}
+            onClick={() => setActiveTab(0)}
+          >
+            MarkDown
+          </button>
+          <button
+            className={activeTab === 1 ? "btn" : null}
+            onClick={() => setActiveTab(1)}
+          >
+            Preview
+          </button>
+          <button
+            className={activeTab === 2 ? "btn" : null}
+            onClick={() => setActiveTab(2)}
+          >
+            Docs
+          </button>
         </div>
-        {
-        hide ? 
-          <div>
-            <textarea onChange={handleChange} value={code}/>
-          </div> : 
-          <div>
-            <textarea value={compiled}/>
-          </div>
-        }
+        {textAreaActive()}
       </div>
     </>
-  )
-}
-
+  );
+};
 
 export default App;
